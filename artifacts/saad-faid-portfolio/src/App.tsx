@@ -1,6 +1,8 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowDownRight, ArrowUpRight, Check, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { type IconType } from 'react-icons';
+import { SiBootstrap, SiCss, SiFigma, SiFlutter, SiGit, SiGithub, SiGitlab, SiHtml5, SiJavascript, SiLaravel, SiMongodb, SiMysql, SiNodedotjs, SiPhp, SiPostgresql, SiReact, SiSupabase, SiTailwindcss, SiTypescript } from 'react-icons/si';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -8,79 +10,63 @@ import NotFound from '@/pages/not-found';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import cv from '@assets/Saad_Faid_CV_eng_1786642845741.pdf';
 import cvPreview from '../../../.agents/outputs/cv-pages/page-1.png';
-import texture from '@assets/15808530_1786642947053.jpg';
 
 const queryClient = new QueryClient();
 
 const navItems = [
   { label: 'About', href: '#about' },
   { label: 'Experience', href: '#experience' },
-  { label: 'Selected work', href: '#work' },
+  { label: 'Work', href: '#work' },
+  { label: 'Stack', href: '#stack' },
   { label: 'Contact', href: '#contact' },
 ];
 
 const experiences = [
-  {
-    date: 'Jan 2023 — Feb 2023',
-    company: 'OCP Group · Direction Générale',
-    role: 'Full Stack Developer Intern',
-    place: 'Sidi Chennane',
-    copy: 'Built responsive pages with the marketing team, improved security and performance, and documented a clear path for future iterations.',
-    current: false,
-  },
-  {
-    date: 'Aug 2024 — Sep 2024',
-    company: 'Innovative Tech Startup',
-    role: 'Full Stack Developer Intern',
-    place: 'Casablanca',
-    copy: 'Shaped a mobile rental experience and a web platform for claims, reports and requests — from first test to team handoff.',
-    current: false,
-  },
-  {
-    date: 'Oct 2024 — Dec 2024',
-    company: 'Assurance Youssef Salah · AXA',
-    role: 'Web Developer Intern',
-    place: 'Khouribga',
-    copy: 'Delivered accessible internal pages, optimized performance and security, and kept communication crisp while working independently.',
-    current: true,
-  },
+  { date: 'Jan 2023 — Feb 2023', company: 'OCP Group', detail: 'Direction Générale · Sidi Chennane', role: 'Full Stack Developer Intern', copy: 'Responsive pages, security and performance improvements, and documentation for future iterations.' },
+  { date: 'Aug 2024 — Sep 2024', company: 'Innovative Tech Startup', detail: 'Casablanca', role: 'Full Stack Developer Intern', copy: 'A mobile apartment rental and sales experience, plus a web platform for claims, reports and requests.' },
+  { date: 'Oct 2024 — Dec 2024', company: 'Assurance Youssef Salah', detail: 'AXA · Khouribga', role: 'Web Developer Intern', copy: 'Accessible internal pages with a focus on performance, security, and independent delivery.' },
 ];
 
-const projects = [
-  {
-    number: '01',
-    title: 'Realty, without the back-and-forth',
-    name: 'Property rental & sales platform',
-    description: 'A focused platform for managing listings, client requests, reports and the day-to-day rhythm of real-estate work.',
-    tags: ['Laravel', 'PostgreSQL', 'Tailwind CSS'],
-    className: 'project-art--realty',
-    accent: 'teal',
-  },
-  {
-    number: '02',
-    title: 'Bghit Nsog',
-    name: 'Car rental mobile app',
-    description: 'A mobile-first experience for discovering cars, making reservations and keeping rental operations moving.',
-    tags: ['Flutter', 'Supabase', 'REST API'],
-    className: 'project-art--car',
-    accent: 'coral',
-  },
-  {
-    number: '03',
-    title: 'The fleet, in one place',
-    name: 'Rental agency management platform',
-    description: 'Two web surfaces for agencies to coordinate vehicles, reservations, announcements and fleet availability.',
-    tags: ['React.js', 'Node.js', 'MongoDB'],
-    className: 'project-art--fleet',
-    accent: 'sand',
-  },
+type WorkFilter = 'all' | 'selected' | 'internship';
+type Project = {
+  number: string;
+  title: string;
+  name: string;
+  description: string;
+  tags: string[];
+  category: Exclude<WorkFilter, 'all'>;
+  art: string;
+};
+
+const projects: Project[] = [
+  { number: '01', title: 'Bghit Nsog', name: 'Car rental mobile app', description: 'A mobile-first rental flow for discovering cars, making reservations, and keeping rental operations moving.', tags: ['Flutter', 'Supabase', 'REST APIs'], category: 'selected', art: 'project-art--car' },
+  { number: '02', title: 'A place to land', name: 'Apartment rental & sales mobile experience', description: 'An internship project shaped around browsing properties and making the next step in a rental or sale clearer.', tags: ['Flutter', 'Supabase', 'Figma'], category: 'internship', art: 'project-art--realty' },
+  { number: '03', title: 'The fleet, in one place', name: 'Rental agency management platform', description: 'Web surfaces for agencies to coordinate vehicles, reservations, announcements, and fleet availability.', tags: ['React.js', 'Node.js', 'MongoDB'], category: 'selected', art: 'project-art--fleet' },
+  { number: '04', title: 'A clearer queue', name: 'Claims, reports & requests platform', description: 'An internship web platform for organizing claims, reports, and requests in one practical workspace.', tags: ['Laravel', 'PostgreSQL', 'Tailwind CSS'], category: 'internship', art: 'project-art--claims' },
 ];
 
-const stackGroups = [
-  { label: 'Build', items: ['Node.js', 'Laravel / PHP', 'React.js', 'JavaScript', 'TypeScript', 'HTML5', 'CSS3'] },
-  { label: 'Shape', items: ['Tailwind CSS', 'Bootstrap', 'Flutter', 'Figma', 'REST APIs'] },
-  { label: 'Store', items: ['Supabase', 'PostgreSQL', 'MySQL', 'MongoDB'] },
-  { label: 'Ship', items: ['Git', 'GitHub', 'GitLab'] },
+type Skill = { name: string; group: string; icon?: IconType };
+const skills: Skill[] = [
+  { name: 'HTML5', group: 'Frontend', icon: SiHtml5 },
+  { name: 'CSS3', group: 'Frontend', icon: SiCss },
+  { name: 'JavaScript', group: 'Frontend', icon: SiJavascript },
+  { name: 'TypeScript', group: 'Frontend', icon: SiTypescript },
+  { name: 'React.js', group: 'Frontend', icon: SiReact },
+  { name: 'Tailwind CSS', group: 'Frontend', icon: SiTailwindcss },
+  { name: 'Bootstrap', group: 'Frontend', icon: SiBootstrap },
+  { name: 'Node.js', group: 'Backend', icon: SiNodedotjs },
+  { name: 'Laravel', group: 'Backend', icon: SiLaravel },
+  { name: 'PHP', group: 'Backend', icon: SiPhp },
+  { name: 'Flutter', group: 'Mobile', icon: SiFlutter },
+  { name: 'PostgreSQL', group: 'Data', icon: SiPostgresql },
+  { name: 'MongoDB', group: 'Data', icon: SiMongodb },
+  { name: 'MySQL', group: 'Data', icon: SiMysql },
+  { name: 'Supabase', group: 'Data', icon: SiSupabase },
+  { name: 'Figma', group: 'Workflow', icon: SiFigma },
+  { name: 'Git', group: 'Workflow', icon: SiGit },
+  { name: 'GitHub', group: 'Workflow', icon: SiGithub },
+  { name: 'GitLab', group: 'Workflow', icon: SiGitlab },
+  { name: 'REST APIs', group: 'Workflow' },
 ];
 
 function useReveal() {
@@ -90,15 +76,14 @@ function useReveal() {
       elements.forEach((element) => element.classList.add('is-visible'));
       return;
     }
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
           observer.unobserve(entry.target);
         }
-      }),
-      { threshold: 0.12 },
-    );
+      });
+    }, { threshold: 0.12 });
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
   }, []);
@@ -106,35 +91,29 @@ function useReveal() {
 
 function Header({ activeSection }: { activeSection: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const closeMenu = () => setMenuOpen(false);
   return (
-    <header className="fixed inset-x-0 top-0 z-40 px-4 pt-4 sm:px-6 lg:px-10">
-      <div className="mx-auto flex max-w-[1380px] items-center justify-between rounded-full border border-foreground/15 bg-[hsl(var(--background)/.82)] px-4 py-3 shadow-[0_8px_28px_rgba(24,67,64,.07)] backdrop-blur-md sm:px-6">
-        <a href="#top" className="group flex items-center gap-3" onClick={() => setMenuOpen(false)}>
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-[hsl(var(--primary))] font-display text-sm font-bold text-[hsl(var(--primary-foreground))] transition-transform group-hover:rotate-12">SF</span>
-          <span className="hidden font-mono-ui text-[10px] uppercase tracking-[.16em] text-foreground/70 sm:block">Saad Faid / portfolio</span>
+    <header className="fixed inset-x-0 top-0 z-40 px-4 pt-4 sm:px-7 lg:px-10">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between border border-[hsl(var(--foreground)/.2)] bg-[hsl(var(--background)/.88)] px-4 py-3 backdrop-blur-md sm:px-5">
+        <a href="#top" onClick={closeMenu} data-testid="link-logo" className="group flex items-center gap-3">
+          <span className="grid h-9 w-9 place-items-center bg-[hsl(var(--accent))] font-mono-ui text-xs font-bold text-[hsl(var(--accent-foreground))] transition-transform group-hover:rotate-6">SF</span>
+          <span className="font-mono-ui text-[10px] uppercase tracking-[.15em] text-foreground/70">Saad Faid <span className="text-[hsl(var(--accent))]">/</span> developer</span>
         </a>
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
           {navItems.map((item) => (
-            <a key={item.href} href={item.href} className={`nav-link font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground/70 hover:text-foreground ${activeSection === item.href.slice(1) ? 'active text-foreground' : ''}`}>
-              {item.label}
-            </a>
+            <a key={item.href} href={item.href} data-testid={`link-nav-${item.label.toLowerCase()}`} className={`nav-link font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground/65 hover:text-foreground ${activeSection === item.href.slice(1) ? 'active text-foreground' : ''}`}>{item.label}</a>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href="#contact" className="hidden rounded-full bg-[hsl(var(--accent))] px-4 py-2 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5 sm:block">Let&apos;s talk <ArrowUpRight className="ml-1 inline h-3.5 w-3.5" /></a>
-          <button type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} onClick={() => setMenuOpen((open) => !open)} className="grid h-9 w-9 place-items-center rounded-full border border-foreground/15 md:hidden">
+          <a href="#contact" data-testid="link-header-contact" className="hidden items-center gap-2 bg-[hsl(var(--accent))] px-4 py-2.5 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5 sm:inline-flex">Let&apos;s talk <ArrowUpRight className="h-3.5 w-3.5" /></a>
+          <button type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} data-testid="button-mobile-menu" onClick={() => setMenuOpen((open) => !open)} className="grid h-9 w-9 place-items-center border border-foreground/20 lg:hidden">
             {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
       {menuOpen && (
-        <nav className="mx-0 mt-2 grid gap-1 rounded-3xl border border-foreground/15 bg-[hsl(var(--background)/.96)] p-3 shadow-[var(--shadow-soft)] backdrop-blur-md md:hidden">
-          {navItems.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)} className="rounded-2xl px-4 py-3 font-mono-ui text-[11px] uppercase tracking-[.12em] transition-colors hover:bg-[hsl(var(--muted))]">
-              {item.label}
-            </a>
-          ))}
+        <nav className="mt-2 grid gap-px border border-foreground/20 bg-[hsl(var(--background)/.96)] p-2 backdrop-blur-md lg:hidden" aria-label="Mobile navigation">
+          {navItems.map((item) => <a key={item.href} href={item.href} onClick={closeMenu} data-testid={`link-mobile-${item.label.toLowerCase()}`} className="px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.13em] transition-colors hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]">{item.label}</a>)}
         </nav>
       )}
     </header>
@@ -143,42 +122,23 @@ function Header({ activeSection }: { activeSection: string }) {
 
 function Hero() {
   return (
-    <section id="top" className="relative mx-auto grid min-h-[760px] max-w-[1380px] items-center gap-12 px-6 pb-16 pt-36 lg:grid-cols-[1.08fr_.92fr] lg:gap-16 lg:px-10 lg:pb-24 lg:pt-44">
+    <section id="top" className="relative mx-auto grid min-h-[760px] max-w-[1440px] items-end gap-12 px-6 pb-20 pt-36 lg:grid-cols-[1.12fr_.88fr] lg:gap-16 lg:px-10 lg:pb-28 lg:pt-48">
       <div className="relative z-10">
-        <div className="reveal flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.16em] text-[hsl(var(--primary))]">
-          <span className="h-2 w-2 rounded-full bg-[hsl(var(--accent))]" />
-          Available for meaningful builds · Morocco
-        </div>
-        <h1 className="reveal reveal-delay-1 display-title mt-8 max-w-4xl font-display text-[clamp(4.4rem,11vw,10.2rem)] font-bold text-foreground">
-          Useful<br /><span className="text-[hsl(var(--primary))]">by design.</span>
-        </h1>
-        <p className="reveal reveal-delay-2 mt-8 max-w-xl text-lg leading-8 text-foreground/70 sm:text-xl">
-          I&apos;m <strong className="font-semibold text-foreground">Saad Faid</strong>, a Full Stack Web &amp; Mobile Developer from Berrechid. I turn real-world friction into products people can actually use.
-        </p>
-        <div className="reveal reveal-delay-3 mt-10 flex flex-wrap items-center gap-3">
-          <a href="#work" className="inline-flex items-center gap-3 rounded-full bg-[hsl(var(--primary))] px-6 py-3.5 font-mono-ui text-[10px] uppercase tracking-[.12em] text-[hsl(var(--primary-foreground))] transition-transform hover:-translate-y-1">See selected work <ArrowDownRight className="h-4 w-4" /></a>
-          <a href={cv} download="Saad-Faid-CV.pdf" className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-5 py-3.5 font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground/75 transition-colors hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))]"><Download className="h-4 w-4" /> Download CV</a>
+        <div className="reveal flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.16em] text-[hsl(var(--accent))]"><span className="h-2 w-2 bg-[hsl(var(--accent))]" /> Berrechid, Morocco <span className="text-foreground/30">·</span> open to useful work</div>
+        <h1 className="reveal reveal-delay-1 display-title mt-7 max-w-5xl font-display text-[clamp(4rem,12.5vw,11rem)] font-bold uppercase text-foreground">Build<br /><span className="text-[hsl(var(--accent))]">what matters.</span></h1>
+        <div className="reveal reveal-delay-2 mt-9 grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
+          <p className="max-w-xl text-base leading-7 text-foreground/65 sm:text-lg">I&apos;m <strong className="text-foreground">Saad Faid</strong>, a Full Stack Web &amp; Mobile Developer. I work from the interface to the API, turning real-world friction into products people can use.</p>
+          <a href="#work" data-testid="link-hero-work" className="group inline-flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground hover:text-[hsl(var(--accent))]">Scroll to selected work <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-y-1 group-hover:translate-x-1" /></a>
         </div>
       </div>
-      <div className="reveal reveal-delay-2 relative mx-auto w-full max-w-[480px] lg:ml-auto">
-        <div className="stone-texture absolute -right-4 -top-5 h-32 w-32 rounded-full opacity-80 mix-blend-multiply sm:-right-8 sm:-top-8 sm:h-44 sm:w-44" style={{ backgroundImage: `linear-gradient(115deg, rgba(9, 78, 78, .16), rgba(4, 52, 54, .02)), url(${texture})` }} />
-        <div className="relative rounded-[2rem] border border-foreground/15 bg-[hsl(var(--card))] p-3 shadow-[var(--shadow-soft)]">
-          <div className="portrait-window aspect-[.88] rounded-[1.4rem]">
+      <div className="reveal reveal-delay-2 relative mx-auto w-full max-w-[460px] lg:ml-auto">
+        <div className="absolute -right-4 -top-7 grid h-24 w-24 place-items-center border border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-center text-[hsl(var(--accent-foreground))] sm:-right-8 sm:-top-10 sm:h-32 sm:w-32"><span className="font-mono-ui text-[9px] uppercase leading-4 tracking-[.1em]">Full stack<br />web + mobile</span></div>
+        <div className="border border-foreground/20 bg-[hsl(var(--card))] p-3">
+          <div className="portrait-window aspect-[.84]">
             <img src={cvPreview} alt="Saad Faid portrait from his CV" />
-            <div className="absolute bottom-5 left-5 z-10 max-w-[80%] text-[hsl(var(--card))]">
-              <p className="font-mono-ui text-[9px] uppercase tracking-[.2em] opacity-80">Field note / 01</p>
-              <p className="mt-2 font-display text-3xl font-bold leading-none">Curious.<br />Hands-on.</p>
-            </div>
+            <div className="absolute inset-x-5 bottom-5 z-10 flex items-end justify-between text-[hsl(var(--foreground))]"><div><p className="font-mono-ui text-[9px] uppercase tracking-[.18em] text-[hsl(var(--accent))]">Field note / 01</p><p className="mt-2 font-display text-3xl font-bold leading-none">Curious.<br />Hands-on.</p></div><span className="font-mono-ui text-[9px] text-foreground/50">SF—25</span></div>
           </div>
-          <div className="flex items-center justify-between px-2 pb-1 pt-4">
-            <span className="font-mono-ui text-[9px] uppercase tracking-[.14em] text-foreground/55">Berrechid, MA</span>
-            <span className="flex items-center gap-2 font-mono-ui text-[9px] uppercase tracking-[.14em] text-[hsl(var(--primary))]"><span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" /> 2025 — now</span>
-          </div>
-        </div>
-        <div className="float-slow absolute -bottom-8 -left-7 hidden rounded-2xl border border-foreground/15 bg-[hsl(var(--card))] p-4 shadow-[var(--shadow-card)] sm:block">
-          <p className="font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/55">Currently learning</p>
-          <p className="mt-2 font-display text-lg font-bold text-[hsl(var(--primary))]">What&apos;s next?</p>
-          <div className="mt-2 h-1 w-20 overflow-hidden rounded-full bg-[hsl(var(--muted))]"><div className="h-full w-2/3 bg-[hsl(var(--accent))]" /></div>
+          <div className="flex items-center justify-between px-1 pt-4 font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/50"><span>Developer profile</span><span className="flex items-center gap-2 text-[hsl(var(--accent))]"><i className="h-1.5 w-1.5 bg-[hsl(var(--accent))]" /> Available</span></div>
         </div>
       </div>
     </section>
@@ -186,140 +146,75 @@ function Hero() {
 }
 
 function Ticker() {
-  return (
-    <div className="overflow-hidden border-y border-foreground/15 bg-[hsl(var(--primary))] py-4 text-[hsl(var(--primary-foreground))]">
-      <div className="marquee-track flex items-center gap-8 font-display text-lg font-bold uppercase tracking-[.02em]">
-        {Array.from({ length: 2 }).flatMap((_, index) => [
-          <span key={`${index}-one`}>Web products</span>,
-          <span key={`${index}-dot`} className="text-[hsl(var(--accent))]">·</span>,
-          <span key={`${index}-two`}>Mobile thinking</span>,
-          <span key={`${index}-dot2`} className="text-[hsl(var(--accent))]">·</span>,
-          <span key={`${index}-three`}>Useful outcomes</span>,
-          <span key={`${index}-dot3`} className="text-[hsl(var(--accent))]">·</span>,
-        ])}
-      </div>
-    </div>
-  );
+  return <div className="overflow-hidden border-y border-foreground/20 bg-[hsl(var(--accent))] py-3.5 text-[hsl(var(--accent-foreground))]"><div className="marquee-track flex items-center gap-8 font-mono-ui text-xs uppercase tracking-[.13em]">{Array.from({ length: 3 }).flatMap((_, index) => [<span key={`${index}-a`}>Interfaces</span>, <span key={`${index}-b`} className="text-[hsl(var(--accent-foreground)/.45)]">/</span>, <span key={`${index}-c`}>APIs</span>, <span key={`${index}-d`} className="text-[hsl(var(--accent-foreground)/.45)]">/</span>, <span key={`${index}-e`}>Mobile thinking</span>, <span key={`${index}-f`} className="text-[hsl(var(--accent-foreground)/.45)]">/</span>])}</div></div>;
 }
 
 function About() {
   return (
-    <section id="about" className="mx-auto max-w-[1380px] px-6 py-24 lg:px-10 lg:py-36">
-      <div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr] lg:gap-24">
-        <div className="reveal">
-          <p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">01 / The point of view</p>
-          <h2 className="mt-5 max-w-sm font-display text-5xl font-bold leading-[.98] sm:text-6xl">Good software starts with listening.</h2>
-        </div>
-        <div className="reveal reveal-delay-1">
-          <p className="max-w-2xl text-2xl leading-[1.35] text-foreground/80 sm:text-3xl">I like the space between a messy brief and a clear product — asking better questions, choosing the right tools, and making the interface feel obvious.</p>
-          <div className="mt-12 grid gap-8 border-t border-foreground/15 pt-8 sm:grid-cols-3">
-            <div><p className="font-display text-4xl font-bold text-[hsl(var(--primary))]">03</p><p className="mt-2 text-sm leading-6 text-foreground/60">real-world product contexts</p></div>
-            <div><p className="font-display text-4xl font-bold text-[hsl(var(--primary))]">02</p><p className="mt-2 text-sm leading-6 text-foreground/60">platforms I think across: web + mobile</p></div>
-            <div><p className="font-display text-4xl font-bold text-[hsl(var(--primary))]">01</p><p className="mt-2 text-sm leading-6 text-foreground/60">team habit: communicate early</p></div>
-          </div>
-        </div>
+    <section id="about" className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+      <div className="grid gap-14 lg:grid-cols-[.72fr_1.28fr] lg:gap-24">
+        <div className="reveal"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">01 / Point of view</p><h2 className="mt-5 max-w-lg font-display text-5xl font-bold uppercase leading-[.9] sm:text-7xl">Useful is a design choice.</h2></div>
+        <div className="reveal reveal-delay-1"><p className="max-w-3xl text-2xl leading-[1.2] text-foreground/80 sm:text-4xl">The best work starts before the first line of code: understand the people, find the friction, then make the next step obvious.</p><div className="mt-14 grid gap-5 border-t border-foreground/20 pt-6 sm:grid-cols-3">{[['03', 'real-world contexts', 'OCP, insurance, and rental products.'], ['02', 'platforms in reach', 'Web systems and mobile experiences.'], ['01', 'way of working', 'Communicate early. Ship with care.']].map(([number, title, copy]) => <div key={title} className="orange-rule relative pt-5"><p className="font-display text-5xl font-bold text-[hsl(var(--accent))]">{number}</p><p className="mt-3 font-mono-ui text-[10px] uppercase tracking-[.1em] text-foreground/75">{title}</p><p className="mt-2 text-sm leading-6 text-foreground/50">{copy}</p></div>)}</div></div>
       </div>
-      <div className="reveal reveal-delay-2 mt-24 grid gap-4 md:grid-cols-3">
-        {[
-          ['01', 'Understand the ground', 'I start with the people, constraints and small frictions behind a request.'],
-          ['02', 'Build the useful layer', 'I move comfortably from data and APIs to an interface that earns its place.'],
-          ['03', 'Leave the door open', 'Clear handoffs, readable code and documentation make the next step easier.'],
-        ].map(([number, title, copy]) => (
-          <div key={number} className="group border-t border-foreground/20 pt-5 transition-colors hover:border-[hsl(var(--accent))]">
-            <span className="font-mono-ui text-[10px] text-[hsl(var(--accent))]">{number}</span>
-            <h3 className="mt-8 font-display text-2xl font-bold">{title}</h3>
-            <p className="mt-3 max-w-xs text-sm leading-6 text-foreground/60">{copy}</p>
-          </div>
-        ))}
-      </div>
+      <div className="reveal reveal-delay-2 mt-24 grid gap-px border border-foreground/20 bg-foreground/20 md:grid-cols-3">{[['01', 'Understand the ground', 'Start with context, constraints, and the small frictions behind a request.'], ['02', 'Build the useful layer', 'Move comfortably from data and APIs to an interface that earns its place.'], ['03', 'Leave the door open', 'Readable code, clear handoffs, and documentation make the next step easier.']].map(([number, title, copy]) => <div key={number} className="group bg-[hsl(var(--background))] p-6 transition-colors hover:bg-[hsl(var(--secondary))] sm:p-8"><span className="font-mono-ui text-[10px] text-[hsl(var(--accent))]">{number}</span><h3 className="mt-16 font-display text-2xl font-bold uppercase">{title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-foreground/55">{copy}</p></div>)}</div>
     </section>
   );
 }
 
 function Experience() {
   return (
-    <section id="experience" className="bg-[hsl(var(--secondary)/.55)]">
-      <div className="mx-auto max-w-[1380px] px-6 py-24 lg:px-10 lg:py-36">
-        <div className="reveal flex flex-col justify-between gap-5 border-b border-foreground/15 pb-8 sm:flex-row sm:items-end">
-          <div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">02 / Experience</p><h2 className="mt-5 font-display text-5xl font-bold sm:text-7xl">Where I&apos;ve<br /><span className="text-[hsl(var(--primary))]">put it to work.</span></h2></div>
-          <p className="max-w-xs text-sm leading-6 text-foreground/60">Three environments, different rhythms. The common thread: ship with care and stay adaptable.</p>
-        </div>
-        <div className="timeline-line relative mt-12 space-y-0">
-          {experiences.map((item, index) => (
-            <article key={item.company} className={`reveal reveal-delay-${Math.min(index + 1, 3)} relative grid gap-5 border-b border-foreground/15 py-8 pl-9 sm:grid-cols-[.38fr_1fr_.9fr] sm:gap-10 sm:pl-10`}>
-              <span className="timeline-dot absolute left-0 top-10 h-3 w-3 rounded-full border-2 border-[hsl(var(--accent))] bg-[hsl(var(--secondary))]" />
-              <p className="font-mono-ui text-[10px] uppercase leading-5 tracking-[.08em] text-foreground/55">{item.date}</p>
-              <div><h3 className="font-display text-2xl font-bold">{item.company}</h3><p className="mt-1 text-sm text-[hsl(var(--primary))]">{item.role}</p></div>
-              <div><p className="font-mono-ui text-[10px] uppercase tracking-[.1em] text-foreground/45">{item.place}</p><p className="mt-3 max-w-sm text-sm leading-6 text-foreground/65">{item.copy}</p></div>
-            </article>
-          ))}
-        </div>
+    <section id="experience" className="bg-[hsl(var(--secondary))]">
+      <div className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+        <div className="reveal flex flex-col justify-between gap-6 border-b border-foreground/20 pb-8 sm:flex-row sm:items-end"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">02 / Experience</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">Where I&apos;ve<br /><span className="text-[hsl(var(--accent))]">put it to work.</span></h2></div><p className="max-w-xs text-sm leading-6 text-foreground/55">Three environments, different rhythms. The common thread: stay adaptable and build for the people on the other side.</p></div>
+        <div className="timeline-line relative mt-12">{experiences.map((item, index) => <article key={item.company} className={`reveal reveal-delay-${Math.min(index + 1, 3)} relative grid gap-4 border-b border-foreground/20 py-8 pl-8 sm:grid-cols-[.34fr_.75fr_1fr] sm:gap-10 sm:pl-10`}><span className="timeline-dot absolute left-0 top-10 h-3 w-3 border-2 border-[hsl(var(--accent))] bg-[hsl(var(--secondary))]" /><p className="font-mono-ui text-[10px] uppercase leading-5 tracking-[.08em] text-foreground/50">{item.date}</p><div><h3 className="font-display text-2xl font-bold uppercase">{item.company}</h3><p className="mt-2 text-sm text-[hsl(var(--accent))]">{item.role}</p></div><div><p className="font-mono-ui text-[10px] uppercase tracking-[.1em] text-foreground/45">{item.detail}</p><p className="mt-3 max-w-sm text-sm leading-6 text-foreground/58">{item.copy}</p></div></article>)}</div>
       </div>
     </section>
   );
 }
 
+function ProjectVisual({ art }: { art: string }) {
+  return <div className={`project-art ${art}`}><span className="project-art__signal project-art__signal--one" /><span className="project-art__signal project-art__signal--two" /><span className="project-art__signal project-art__signal--three" /></div>;
+}
+
 function Work() {
+  const [filter, setFilter] = useState<WorkFilter>('all');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const filteredProjects = useMemo(() => filter === 'all' ? projects : projects.filter((project) => project.category === filter), [filter]);
+  const activeProject = filteredProjects[activeIndex] ?? filteredProjects[0];
+  const selectProject = (index: number) => setActiveIndex(index);
+  const moveProject = (direction: number) => setActiveIndex((index) => (index + direction + filteredProjects.length) % filteredProjects.length);
+  useEffect(() => setActiveIndex(0), [filter]);
+
   return (
-    <section id="work" className="mx-auto max-w-[1380px] px-6 py-24 lg:px-10 lg:py-36">
-      <div className="reveal flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
-        <div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">03 / Selected work</p><h2 className="mt-5 max-w-2xl font-display text-5xl font-bold leading-[.92] sm:text-8xl">From problem<br /><span className="text-[hsl(var(--primary))]">to product.</span></h2></div>
-        <p className="max-w-xs text-sm leading-6 text-foreground/60">A small sample of products shaped around rentals, real estate and the people who run them.</p>
-      </div>
-      <div className="mt-14 grid gap-6 lg:grid-cols-3">
-        {projects.map((project, index) => (
-          <article key={project.name} className={`work-card reveal reveal-delay-${Math.min(index + 1, 3)} overflow-hidden rounded-[1.5rem] border border-foreground/15 bg-[hsl(var(--card))]`}>
-            <div className={`project-art ${project.className}`}><span className="absolute left-5 top-5 z-10 rounded-full border border-foreground/20 bg-[hsl(var(--card)/.55)] px-3 py-1 font-mono-ui text-[10px]">{project.number}</span><span className="absolute bottom-5 right-5 z-10 font-mono-ui text-[9px] uppercase tracking-[.14em] text-foreground/50">Case study / concept</span></div>
-            <div className="p-6">
-              <p className={`font-mono-ui text-[10px] uppercase tracking-[.13em] ${project.accent === 'coral' ? 'text-[hsl(var(--accent))]' : 'text-[hsl(var(--primary))]'}`}>{project.name}</p>
-              <h3 className="mt-3 font-display text-3xl font-bold leading-[1.02]">{project.title}</h3>
-              <p className="mt-4 text-sm leading-6 text-foreground/60">{project.description}</p>
-              <div className="mt-7 flex flex-wrap gap-2">{project.tags.map((tag) => <span key={tag} className="rounded-full bg-[hsl(var(--muted))] px-3 py-1.5 font-mono-ui text-[9px] text-foreground/65">{tag}</span>)}</div>
-            </div>
-          </article>
-        ))}
+    <section id="work" className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+      <div className="reveal flex flex-col gap-7 border-b border-foreground/20 pb-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">03 / Selected work</p><h2 className="mt-5 max-w-3xl font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">From problem<br /><span className="text-[hsl(var(--accent))]">to product.</span></h2></div><p className="max-w-xs text-sm leading-6 text-foreground/55">A growing body of work around rentals, real estate, insurance, and the systems behind them.</p></div>
+      <div className="reveal reveal-delay-1 mt-8 flex flex-wrap items-center justify-between gap-4"><div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects">{(['all', 'selected', 'internship'] as WorkFilter[]).map((item) => <button key={item} type="button" aria-pressed={filter === item} data-testid={`button-filter-${item}`} onClick={() => setFilter(item)} className="filter-button border border-foreground/25 px-3 py-2 font-mono-ui text-[9px] uppercase tracking-[.12em] text-foreground/65">{item === 'all' ? 'All work' : item === 'selected' ? 'Selected work' : 'Internship work'}</button>)}</div><span className="font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground/45">{filteredProjects.length} entries / {activeProject?.number ?? '—'} spotlight</span></div>
+      <div className="reveal reveal-delay-2 mt-8 grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
+        {activeProject && <div className="grid-panel relative min-h-[390px] overflow-hidden border border-foreground/20 p-3 sm:min-h-[490px]"><ProjectVisual art={activeProject.art} /><div className="absolute inset-x-7 bottom-7 z-10 flex items-end justify-between gap-4"><div><p className="font-mono-ui text-[10px] uppercase tracking-[.13em] text-[hsl(var(--accent))]">Spotlight / {activeProject.number}</p><h3 className="mt-3 max-w-xl font-display text-4xl font-bold uppercase leading-[.9] text-foreground sm:text-6xl">{activeProject.title}</h3></div><div className="hidden gap-2 sm:flex"><button type="button" aria-label="Previous project" data-testid="button-project-previous" onClick={() => moveProject(-1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowLeft className="h-4 w-4" /></button><button type="button" aria-label="Next project" data-testid="button-project-next" onClick={() => moveProject(1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowRight className="h-4 w-4" /></button></div></div></div>}
+        <div className="grid gap-3">{filteredProjects.map((project, index) => <button type="button" key={project.number} data-testid={`button-project-${project.number}`} onClick={() => selectProject(index)} className={`work-card text-left ${project.number === activeProject?.number ? 'is-active' : ''} border border-foreground/20 bg-[hsl(var(--card))] p-5`}><div className="flex items-start justify-between gap-4"><span className={`font-mono-ui text-[10px] ${project.number === activeProject?.number ? 'text-[hsl(var(--accent))]' : 'text-foreground/40'}`}>{project.number}</span><ArrowUpRight className={`h-4 w-4 transition-colors ${project.number === activeProject?.number ? 'text-[hsl(var(--accent))]' : 'text-foreground/30'}`} /></div><p className="mt-7 font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/45">{project.name}</p><h3 className="mt-2 font-display text-2xl font-bold uppercase leading-none">{project.title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-foreground/52">{project.description}</p><div className="mt-5 flex flex-wrap gap-2">{project.tags.map((tag) => <span key={tag} className="border border-foreground/15 px-2 py-1 font-mono-ui text-[9px] text-foreground/55">{tag}</span>)}</div></button>)}</div>
       </div>
     </section>
   );
 }
 
 function Toolkit() {
+  const groups = ['Frontend', 'Backend', 'Mobile', 'Data', 'Workflow'];
   return (
-    <section className="border-y border-foreground/15 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]">
-      <div className="mx-auto grid max-w-[1380px] gap-12 px-6 py-24 lg:grid-cols-[.72fr_1.28fr] lg:px-10 lg:py-32">
-        <div className="reveal"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">04 / Toolkit</p><h2 className="mt-5 max-w-sm font-display text-5xl font-bold leading-[.96] sm:text-6xl">Many tools.<br />One clear aim.</h2><p className="mt-7 max-w-sm text-sm leading-6 text-[hsl(var(--primary-foreground)/.65)]">I choose a stack that fits the problem, not a trend. Comfortable on both sides of the line.</p></div>
-        <div className="reveal reveal-delay-1 grid gap-0 sm:grid-cols-2">
-          {stackGroups.map((group) => <div key={group.label} className="border-t border-[hsl(var(--primary-foreground)/.2)] py-6 sm:px-5 sm:first:pl-0"><p className="font-mono-ui text-[10px] uppercase tracking-[.15em] text-[hsl(var(--accent))]">{group.label}</p><div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">{group.items.map((item) => <span key={item} className="font-display text-xl font-semibold tracking-tight text-[hsl(var(--primary-foreground)/.9)]">{item}<span className="ml-2 text-[hsl(var(--accent))]">·</span></span>)}</div></div>)}
-        </div>
+    <section id="stack" className="border-y border-foreground/20 bg-[hsl(var(--foreground))] text-[hsl(var(--background))]">
+      <div className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+        <div className="reveal flex flex-col justify-between gap-8 border-b border-[hsl(var(--background)/.22)] pb-10 lg:flex-row lg:items-end"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">04 / Toolkit</p><h2 className="mt-5 max-w-3xl font-display text-5xl font-bold uppercase leading-[.87] sm:text-8xl">The stack<br /><span className="text-[hsl(var(--accent))]">behind the work.</span></h2></div><p className="max-w-sm text-sm leading-6 text-[hsl(var(--background)/.58)]">Recognizable tools, chosen for the problem in front of me. From structured data to the last interaction.</p></div>
+        <div className="reveal reveal-delay-1 mt-10 grid grid-cols-2 gap-px border border-[hsl(var(--background)/.22)] bg-[hsl(var(--background)/.22)] sm:grid-cols-3 lg:grid-cols-5">{groups.map((group) => <div key={group} className="bg-[hsl(var(--foreground))] p-4 sm:p-5"><p className="font-mono-ui text-[9px] uppercase tracking-[.15em] text-[hsl(var(--accent))]">{group}</p><div className="mt-4 grid gap-2">{skills.filter((skill) => skill.group === group).map((skill) => { const Icon = skill.icon; return <div key={skill.name} className="skill-tile flex items-center gap-2 border border-[hsl(var(--background)/.16)] px-2.5 py-3 text-[hsl(var(--background)/.84)]" title={skill.name}>{Icon ? <Icon className="h-4 w-4 shrink-0" aria-hidden="true" /> : <span className="grid h-4 w-4 shrink-0 place-items-center border border-current font-mono-ui text-[7px]" aria-hidden="true">R</span>}<span className="font-mono-ui text-[9px] leading-3">{skill.name}</span></div>; })}</div></div>)}</div>
       </div>
     </section>
   );
 }
 
-function Education() {
+function Foundations() {
   return (
-    <section className="mx-auto max-w-[1380px] px-6 py-24 lg:px-10 lg:py-36">
-      <div className="grid gap-16 lg:grid-cols-[1.1fr_.9fr]">
-        <div className="reveal">
-          <p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">05 / Foundations</p>
-          <h2 className="mt-5 font-display text-5xl font-bold sm:text-7xl">Always<br /><span className="text-[hsl(var(--primary))]">in motion.</span></h2>
-          <div className="mt-12 space-y-0">
-            {[
-              ['2023 — 2024', 'Professional University Licence', 'Web & Mobile Engineering · École Nationale des Sciences Appliquées (ENSA), Berrechid'],
-              ['2021 — 2023', 'Digital Web Development Diploma', 'Full Stack · Institut Spécialisé de Technologie Appliquée (OFPPT), Khouribga'],
-              ['2020 — 2021', 'Scientific Baccalaureate', 'Physics & Chemistry · Lycée El General El Kettani, Berrechid'],
-            ].map(([year, title, detail]) => <div key={title} className="grid gap-2 border-t border-foreground/15 py-5 sm:grid-cols-[.28fr_1fr] sm:gap-8"><span className="font-mono-ui text-[10px] text-foreground/50">{year}</span><div><h3 className="font-display text-xl font-bold">{title}</h3><p className="mt-1 text-sm leading-6 text-foreground/60">{detail}</p></div></div>)}
-          </div>
-        </div>
-        <div className="reveal reveal-delay-1 lg:pt-28">
-          <div className="rounded-[1.5rem] bg-[hsl(var(--secondary)/.7)] p-7 sm:p-9">
-            <p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">Languages</p>
-            <div className="mt-8 space-y-5">
-              {[['Arabic', 'Native', 100], ['English', 'Professional', 78], ['French', 'Intermediate', 64]].map(([language, level, width]) => <div key={language}><div className="flex items-baseline justify-between"><span className="font-display text-2xl font-bold">{language}</span><span className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-foreground/50">{level}</span></div><div className="mt-3 h-1 rounded-full bg-[hsl(var(--background)/.7)]"><div className="h-full rounded-full bg-[hsl(var(--accent))]" style={{ width: `${width}%` }} /></div></div>)}
-            </div>
-            <div className="mt-10 border-t border-foreground/15 pt-5"><p className="font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/50">Personal operating system</p><p className="mt-3 font-display text-2xl font-bold leading-tight">Teamwork · problem solving · adaptability · communication · time</p></div>
-          </div>
-        </div>
+    <section className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+      <div className="grid gap-16 lg:grid-cols-[1.08fr_.92fr]">
+        <div className="reveal"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">05 / Foundations</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">Keep<br /><span className="text-[hsl(var(--accent))]">moving.</span></h2><div className="mt-12">{[['2023 — 2024', 'Professional University Licence', 'Web & Mobile Engineering · ENSA, Berrechid'], ['2021 — 2023', 'Digital Web Development Diploma', 'Full Stack · OFPPT, Khouribga'], ['2020 — 2021', 'Scientific Baccalaureate', 'Physics & Chemistry · Lycée El General El Kettani, Berrechid']].map(([year, title, detail]) => <div key={title} className="grid gap-2 border-t border-foreground/20 py-5 sm:grid-cols-[.28fr_1fr] sm:gap-8"><span className="font-mono-ui text-[10px] text-foreground/45">{year}</span><div><h3 className="font-display text-xl font-bold uppercase">{title}</h3><p className="mt-1 text-sm leading-6 text-foreground/55">{detail}</p></div></div>)}</div></div>
+        <div className="reveal reveal-delay-1 lg:pt-28"><div className="border border-foreground/20 bg-[hsl(var(--secondary))] p-7 sm:p-9"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">Languages</p><div className="mt-8 space-y-6">{[['Arabic', 'Native', 100], ['English', 'Professional', 78], ['French', 'Intermediate', 64]].map(([language, level, width]) => <div key={language}><div className="flex items-baseline justify-between"><span className="font-display text-2xl font-bold uppercase">{language}</span><span className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-foreground/45">{level}</span></div><div className="mt-3 h-1 bg-[hsl(var(--background))]"><div className="h-full bg-[hsl(var(--accent))]" style={{ width: `${width}%` }} /></div></div>)}</div><div className="mt-10 border-t border-foreground/20 pt-5"><p className="font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/45">Working style</p><p className="mt-3 font-display text-2xl font-bold uppercase leading-tight">Teamwork · problem solving · adaptability · communication · time</p></div></div></div>
       </div>
     </section>
   );
@@ -329,38 +224,22 @@ function Contact() {
   const [copied, setCopied] = useState(false);
   const email = 'faid.saadd@gmail.com';
   const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      window.location.href = `mailto:${email}`;
-    }
+    try { await navigator.clipboard.writeText(email); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.location.href = `mailto:${email}`; }
   };
   return (
-    <section id="contact" className="relative overflow-hidden bg-[hsl(var(--foreground))] text-[hsl(var(--background))]">
-      <div className="stone-texture absolute -right-24 -top-32 h-[430px] w-[430px] rounded-full opacity-30 mix-blend-screen" style={{ backgroundImage: `linear-gradient(115deg, rgba(9, 78, 78, .16), rgba(4, 52, 54, .02)), url(${texture})` }} />
-      <div className="relative mx-auto max-w-[1380px] px-6 py-24 lg:px-10 lg:py-36">
-        <div className="reveal max-w-4xl"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">06 / Start a conversation</p><h2 className="mt-6 font-display text-[clamp(4rem,10vw,9.5rem)] font-bold leading-[.85] tracking-[-.08em]">Have a real<br /><span className="text-[hsl(var(--accent))]">problem?</span></h2><p className="mt-8 max-w-lg text-lg leading-8 text-[hsl(var(--background)/.65)]">Tell me what needs to work better. I&apos;d like to hear the context, the constraints and what a useful outcome looks like.</p></div>
-        <div className="reveal reveal-delay-1 mt-14 flex flex-col gap-4 border-t border-[hsl(var(--background)/.2)] pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <button type="button" onClick={copyEmail} className="group text-left font-display text-2xl font-bold transition-colors hover:text-[hsl(var(--accent))] sm:text-4xl">{email}<span className="ml-3 inline-block align-middle text-[hsl(var(--accent))]">{copied ? <Check className="h-6 w-6" /> : <ArrowUpRight className="h-6 w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}</span><span className="block font-mono-ui text-[9px] font-normal uppercase tracking-[.12em] text-[hsl(var(--background)/.45)]">{copied ? 'Copied to clipboard' : 'Click to copy email'}</span></button>
-          <div className="flex flex-wrap gap-3">
-            <a href="mailto:faid.saadd@gmail.com" className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--accent))] px-5 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-1"><Mail className="h-4 w-4" /> Email me</a>
-            <a href="tel:+212634667536" className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--background)/.3)] px-5 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] transition-colors hover:border-[hsl(var(--accent))]"><Phone className="h-4 w-4" /> Call</a>
-          </div>
-        </div>
-        <div className="reveal reveal-delay-2 mt-20 grid gap-8 border-t border-[hsl(var(--background)/.2)] pt-7 sm:grid-cols-3">
-          <div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--background)/.45)]">Based in</p><p className="mt-2 text-sm">Berrechid, Morocco</p></div></div>
-          <a href="https://www.linkedin.com/in/saad-faid/" target="_blank" rel="noreferrer" className="flex items-start gap-3 transition-colors hover:text-[hsl(var(--accent))]"><Linkedin className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--background)/.45)]">Connect on</p><p className="mt-2 text-sm">LinkedIn <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a>
-          <a href="https://github.com/saad-faid" target="_blank" rel="noreferrer" className="flex items-start gap-3 transition-colors hover:text-[hsl(var(--accent))]"><Github className="mt-0.5 h-4 w-4 text-[hsl(var(--accent))]" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--background)/.45)]">See the code</p><p className="mt-2 text-sm">GitHub <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a>
-        </div>
+    <section id="contact" className="relative overflow-hidden bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]">
+      <div className="absolute right-[-8rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full border-[70px] border-[hsl(var(--accent-foreground)/.13)]" />
+      <div className="relative mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
+        <div className="reveal max-w-5xl"><p className="eyebrow font-mono-ui text-[hsl(var(--accent-foreground)/.68)]">06 / Start a conversation</p><h2 className="mt-6 font-display text-[clamp(4rem,11vw,10rem)] font-bold uppercase leading-[.8] tracking-[-.09em]">Make it<br />work better.</h2><p className="mt-9 max-w-lg text-lg leading-8 text-[hsl(var(--accent-foreground)/.7)]">Tell me what needs to work better. I&apos;d like to hear the context, the constraints, and what a useful outcome looks like.</p></div>
+        <div className="reveal reveal-delay-1 mt-14 flex flex-col gap-7 border-t border-[hsl(var(--accent-foreground)/.25)] pt-7 sm:flex-row sm:items-end sm:justify-between"><button type="button" onClick={copyEmail} data-testid="button-copy-email" className="group text-left font-display text-2xl font-bold uppercase transition-colors hover:text-[hsl(var(--accent-foreground)/.7)] sm:text-4xl">{email}<span className="ml-3 inline-block align-middle">{copied ? <Check className="inline h-6 w-6" /> : <ArrowUpRight className="inline h-6 w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}</span><span className="block font-mono-ui text-[9px] font-normal uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">{copied ? 'Copied to clipboard' : 'Click to copy email'}</span></button><div className="flex flex-wrap gap-2"><a href={`mailto:${email}`} data-testid="link-email" className="inline-flex items-center gap-2 border border-[hsl(var(--accent-foreground)/.55)] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))]"><Mail className="h-4 w-4" /> Email</a><a href="tel:+212634667536" data-testid="link-phone" className="inline-flex items-center gap-2 border border-[hsl(var(--accent-foreground)/.55)] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))]"><Phone className="h-4 w-4" /> Call</a><a href={cv} download="Saad-Faid-CV.pdf" data-testid="link-download-cv" className="inline-flex items-center gap-2 bg-[hsl(var(--accent-foreground))] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent))] transition-transform hover:-translate-y-1"><Download className="h-4 w-4" /> CV</a></div></div>
+        <div className="reveal reveal-delay-2 mt-20 grid gap-8 border-t border-[hsl(var(--accent-foreground)/.25)] pt-7 sm:grid-cols-3"><div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">Based in</p><p className="mt-2 text-sm">Berrechid, Morocco</p></div></div><a href="https://www.linkedin.com/in/saad-faid/" target="_blank" rel="noreferrer" data-testid="link-linkedin" className="flex items-start gap-3 transition-opacity hover:opacity-65"><Linkedin className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">Connect on</p><p className="mt-2 text-sm">LinkedIn <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a><a href="https://github.com/saad-faid" target="_blank" rel="noreferrer" data-testid="link-github" className="flex items-start gap-3 transition-opacity hover:opacity-65"><Github className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">See the code</p><p className="mt-2 text-sm">GitHub <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a></div>
       </div>
     </section>
   );
 }
 
 function Footer() {
-  return <footer className="bg-[hsl(var(--foreground))] px-6 pb-8 text-[hsl(var(--background)/.5)] lg:px-10"><div className="mx-auto flex max-w-[1380px] flex-col gap-3 border-t border-[hsl(var(--background)/.2)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built with curiosity in Berrechid</span><a href="#top" className="text-[hsl(var(--accent))] transition-colors hover:text-[hsl(var(--background))]">Back to top ↑</a></div></footer>;
+  return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built with curiosity in Berrechid</span><a href="#top" data-testid="link-back-top" className="transition-colors hover:text-[hsl(var(--accent-foreground))]">Back to top <ArrowUpRight className="ml-1 inline h-3 w-3" /></a></div></footer>;
 }
 
 function Home() {
@@ -375,33 +254,11 @@ function Home() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
-  return (
-    <div className="site-shell grain min-h-[100dvh]">
-      <Header activeSection={activeSection} />
-      <main>
-        <Hero />
-        <Ticker />
-        <About />
-        <Experience />
-        <Work />
-        <Toolkit />
-        <Education />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <div className="site-shell scanline grain min-h-[100dvh]"><Header activeSection={activeSection} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
 }
 
 function Router() {
-  return (
-    <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route component={NotFound} />
-      </Switch>
-    </RoutedErrorBoundary>
-  );
+  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
@@ -410,16 +267,7 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 }
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
 }
 
 export default App;
