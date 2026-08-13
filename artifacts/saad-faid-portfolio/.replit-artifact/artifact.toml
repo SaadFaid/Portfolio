@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Saad Faid — Full Stack Developer"
+description = "A personal portfolio for Saad Faid, a Full Stack Web & Mobile Developer, presenting his experience, selected projects, education, technical strengths, and contact details in a distinctive turquoise stone-inspired visual world."
+version = "1.0.0"
+id = "artifacts/saad-faid-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22322
+
+[services.development]
+run = "pnpm --filter @workspace/saad-faid-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/saad-faid-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/saad-faid-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22322"
+BASE_PATH = "/"
