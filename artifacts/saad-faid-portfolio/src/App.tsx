@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check, Contrast, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
 import { type IconType } from 'react-icons';
 import { SiBootstrap, SiCss, SiFigma, SiFlutter, SiGit, SiGithub, SiGitlab, SiHtml5, SiJavascript, SiLaravel, SiMongodb, SiMysql, SiNodedotjs, SiPhp, SiPostgresql, SiReact, SiSupabase, SiTailwindcss, SiTypescript } from 'react-icons/si';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -9,7 +9,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import cv from '@assets/Saad_Faid_CV_eng_1786642845741.pdf';
-import cvPreview from '../../../.agents/outputs/cv-pages/page-1.png';
+import profile from '@assets/profile_1786643597787.jpeg';
 
 const queryClient = new QueryClient();
 
@@ -89,7 +89,7 @@ function useReveal() {
   }, []);
 }
 
-function Header({ activeSection }: { activeSection: string }) {
+function Header({ activeSection, monoMode, onToggleTheme }: { activeSection: string; monoMode: boolean; onToggleTheme: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
   return (
@@ -105,6 +105,10 @@ function Header({ activeSection }: { activeSection: string }) {
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          <button type="button" aria-label={monoMode ? 'Switch to signal theme' : 'Switch to black and white theme'} aria-pressed={monoMode} data-testid="button-theme-toggle" onClick={onToggleTheme} className="inline-flex items-center gap-2 border border-foreground/20 px-3 py-2 font-mono-ui text-[9px] uppercase tracking-[.1em] text-foreground/70 transition-colors hover:border-[hsl(var(--accent))] hover:text-foreground">
+            <Contrast className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{monoMode ? 'Signal' : 'B&W'}</span>
+          </button>
           <a href="#contact" data-testid="link-header-contact" className="hidden items-center gap-2 bg-[hsl(var(--accent))] px-4 py-2.5 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5 sm:inline-flex">Let&apos;s talk <ArrowUpRight className="h-3.5 w-3.5" /></a>
           <button type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} data-testid="button-mobile-menu" onClick={() => setMenuOpen((open) => !open)} className="grid h-9 w-9 place-items-center border border-foreground/20 lg:hidden">
             {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -125,7 +129,7 @@ function Hero() {
     <section id="top" className="relative mx-auto grid min-h-[760px] max-w-[1440px] items-end gap-12 px-6 pb-20 pt-36 lg:grid-cols-[1.12fr_.88fr] lg:gap-16 lg:px-10 lg:pb-28 lg:pt-48">
       <div className="relative z-10">
         <div className="reveal flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.16em] text-[hsl(var(--accent))]"><span className="h-2 w-2 bg-[hsl(var(--accent))]" /> Berrechid, Morocco <span className="text-foreground/30">·</span> open to useful work</div>
-        <h1 className="reveal reveal-delay-1 display-title mt-7 max-w-5xl font-display text-[clamp(4rem,12.5vw,11rem)] font-bold uppercase text-foreground">Build<br /><span className="text-[hsl(var(--accent))]">what matters.</span></h1>
+        <h1 className="reveal reveal-delay-1 display-title mt-7 max-w-5xl font-display text-[clamp(3.5rem,10.5vw,9.25rem)] font-bold uppercase text-foreground">Build<br /><span className="text-[hsl(var(--accent))]">what matters.</span></h1>
         <div className="reveal reveal-delay-2 mt-9 grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
           <p className="max-w-xl text-base leading-7 text-foreground/65 sm:text-lg">I&apos;m <strong className="text-foreground">Saad Faid</strong>, a Full Stack Web &amp; Mobile Developer. I work from the interface to the API, turning real-world friction into products people can use.</p>
           <a href="#work" data-testid="link-hero-work" className="group inline-flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground hover:text-[hsl(var(--accent))]">Scroll to selected work <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-y-1 group-hover:translate-x-1" /></a>
@@ -135,7 +139,7 @@ function Hero() {
         <div className="absolute -right-4 -top-7 grid h-24 w-24 place-items-center border border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-center text-[hsl(var(--accent-foreground))] sm:-right-8 sm:-top-10 sm:h-32 sm:w-32"><span className="font-mono-ui text-[9px] uppercase leading-4 tracking-[.1em]">Full stack<br />web + mobile</span></div>
         <div className="border border-foreground/20 bg-[hsl(var(--card))] p-3">
           <div className="portrait-window aspect-[.84]">
-            <img src={cvPreview} alt="Saad Faid portrait from his CV" />
+            <img src={profile} alt="Portrait of Saad Faid" />
             <div className="absolute inset-x-5 bottom-5 z-10 flex items-end justify-between text-[hsl(var(--foreground))]"><div><p className="font-mono-ui text-[9px] uppercase tracking-[.18em] text-[hsl(var(--accent))]">Field note / 01</p><p className="mt-2 font-display text-3xl font-bold leading-none">Curious.<br />Hands-on.</p></div><span className="font-mono-ui text-[9px] text-foreground/50">SF—25</span></div>
           </div>
           <div className="flex items-center justify-between px-1 pt-4 font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/50"><span>Developer profile</span><span className="flex items-center gap-2 text-[hsl(var(--accent))]"><i className="h-1.5 w-1.5 bg-[hsl(var(--accent))]" /> Available</span></div>
@@ -165,7 +169,7 @@ function Experience() {
   return (
     <section id="experience" className="bg-[hsl(var(--secondary))]">
       <div className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
-        <div className="reveal flex flex-col justify-between gap-6 border-b border-foreground/20 pb-8 sm:flex-row sm:items-end"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">02 / Experience</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">Where I&apos;ve<br /><span className="text-[hsl(var(--accent))]">put it to work.</span></h2></div><p className="max-w-xs text-sm leading-6 text-foreground/55">Three environments, different rhythms. The common thread: stay adaptable and build for the people on the other side.</p></div>
+        <div className="reveal flex flex-col justify-between gap-6 border-b border-foreground/20 pb-8 sm:flex-row sm:items-end"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">02 / Experience</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-7xl">Where I&apos;ve<br /><span className="text-[hsl(var(--accent))]">put it to work.</span></h2></div><p className="max-w-xs text-sm leading-6 text-foreground/55">Three environments, different rhythms. The common thread: stay adaptable and build for the people on the other side.</p></div>
         <div className="timeline-line relative mt-12">{experiences.map((item, index) => <article key={item.company} className={`reveal reveal-delay-${Math.min(index + 1, 3)} relative grid gap-4 border-b border-foreground/20 py-8 pl-8 sm:grid-cols-[.34fr_.75fr_1fr] sm:gap-10 sm:pl-10`}><span className="timeline-dot absolute left-0 top-10 h-3 w-3 border-2 border-[hsl(var(--accent))] bg-[hsl(var(--secondary))]" /><p className="font-mono-ui text-[10px] uppercase leading-5 tracking-[.08em] text-foreground/50">{item.date}</p><div><h3 className="font-display text-2xl font-bold uppercase">{item.company}</h3><p className="mt-2 text-sm text-[hsl(var(--accent))]">{item.role}</p></div><div><p className="font-mono-ui text-[10px] uppercase tracking-[.1em] text-foreground/45">{item.detail}</p><p className="mt-3 max-w-sm text-sm leading-6 text-foreground/58">{item.copy}</p></div></article>)}</div>
       </div>
     </section>
@@ -213,7 +217,7 @@ function Foundations() {
   return (
     <section className="mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
       <div className="grid gap-16 lg:grid-cols-[1.08fr_.92fr]">
-        <div className="reveal"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">05 / Foundations</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">Keep<br /><span className="text-[hsl(var(--accent))]">moving.</span></h2><div className="mt-12">{[['2023 — 2024', 'Professional University Licence', 'Web & Mobile Engineering · ENSA, Berrechid'], ['2021 — 2023', 'Digital Web Development Diploma', 'Full Stack · OFPPT, Khouribga'], ['2020 — 2021', 'Scientific Baccalaureate', 'Physics & Chemistry · Lycée El General El Kettani, Berrechid']].map(([year, title, detail]) => <div key={title} className="grid gap-2 border-t border-foreground/20 py-5 sm:grid-cols-[.28fr_1fr] sm:gap-8"><span className="font-mono-ui text-[10px] text-foreground/45">{year}</span><div><h3 className="font-display text-xl font-bold uppercase">{title}</h3><p className="mt-1 text-sm leading-6 text-foreground/55">{detail}</p></div></div>)}</div></div>
+        <div className="reveal"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">05 / Foundations</p><h2 className="mt-5 font-display text-5xl font-bold uppercase leading-[.86] sm:text-7xl">Keep<br /><span className="text-[hsl(var(--accent))]">moving.</span></h2><div className="mt-12">{[['2023 — 2024', 'Professional University Licence', 'Web & Mobile Engineering · ENSA, Berrechid'], ['2021 — 2023', 'Digital Web Development Diploma', 'Full Stack · OFPPT, Khouribga'], ['2020 — 2021', 'Scientific Baccalaureate', 'Physics & Chemistry · Lycée El General El Kettani, Berrechid']].map(([year, title, detail]) => <div key={title} className="grid gap-2 border-t border-foreground/20 py-5 sm:grid-cols-[.28fr_1fr] sm:gap-8"><span className="font-mono-ui text-[10px] text-foreground/45">{year}</span><div><h3 className="font-display text-xl font-bold uppercase">{title}</h3><p className="mt-1 text-sm leading-6 text-foreground/55">{detail}</p></div></div>)}</div></div>
         <div className="reveal reveal-delay-1 lg:pt-28"><div className="border border-foreground/20 bg-[hsl(var(--secondary))] p-7 sm:p-9"><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">Languages</p><div className="mt-8 space-y-6">{[['Arabic', 'Native', 100], ['English', 'Professional', 78], ['French', 'Intermediate', 64]].map(([language, level, width]) => <div key={language}><div className="flex items-baseline justify-between"><span className="font-display text-2xl font-bold uppercase">{language}</span><span className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-foreground/45">{level}</span></div><div className="mt-3 h-1 bg-[hsl(var(--background))]"><div className="h-full bg-[hsl(var(--accent))]" style={{ width: `${width}%` }} /></div></div>)}</div><div className="mt-10 border-t border-foreground/20 pt-5"><p className="font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/45">Working style</p><p className="mt-3 font-display text-2xl font-bold uppercase leading-tight">Teamwork · problem solving · adaptability · communication · time</p></div></div></div>
       </div>
     </section>
@@ -230,7 +234,7 @@ function Contact() {
     <section id="contact" className="relative overflow-hidden bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]">
       <div className="absolute right-[-8rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full border-[70px] border-[hsl(var(--accent-foreground)/.13)]" />
       <div className="relative mx-auto max-w-[1440px] px-6 py-24 lg:px-10 lg:py-36">
-        <div className="reveal max-w-5xl"><p className="eyebrow font-mono-ui text-[hsl(var(--accent-foreground)/.68)]">06 / Start a conversation</p><h2 className="mt-6 font-display text-[clamp(4rem,11vw,10rem)] font-bold uppercase leading-[.8] tracking-[-.09em]">Make it<br />work better.</h2><p className="mt-9 max-w-lg text-lg leading-8 text-[hsl(var(--accent-foreground)/.7)]">Tell me what needs to work better. I&apos;d like to hear the context, the constraints, and what a useful outcome looks like.</p></div>
+        <div className="reveal max-w-5xl"><p className="eyebrow font-mono-ui text-[hsl(var(--accent-foreground)/.68)]">06 / Start a conversation</p><h2 className="mt-6 font-display text-[clamp(3.5rem,9vw,8.5rem)] font-bold uppercase leading-[.8] tracking-[-.09em]">Make it<br />work better.</h2><p className="mt-9 max-w-lg text-lg leading-8 text-[hsl(var(--accent-foreground)/.7)]">Tell me what needs to work better. I&apos;d like to hear the context, the constraints, and what a useful outcome looks like.</p></div>
         <div className="reveal reveal-delay-1 mt-14 flex flex-col gap-7 border-t border-[hsl(var(--accent-foreground)/.25)] pt-7 sm:flex-row sm:items-end sm:justify-between"><button type="button" onClick={copyEmail} data-testid="button-copy-email" className="group text-left font-display text-2xl font-bold uppercase transition-colors hover:text-[hsl(var(--accent-foreground)/.7)] sm:text-4xl">{email}<span className="ml-3 inline-block align-middle">{copied ? <Check className="inline h-6 w-6" /> : <ArrowUpRight className="inline h-6 w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}</span><span className="block font-mono-ui text-[9px] font-normal uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">{copied ? 'Copied to clipboard' : 'Click to copy email'}</span></button><div className="flex flex-wrap gap-2"><a href={`mailto:${email}`} data-testid="link-email" className="inline-flex items-center gap-2 border border-[hsl(var(--accent-foreground)/.55)] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))]"><Mail className="h-4 w-4" /> Email</a><a href="tel:+212634667536" data-testid="link-phone" className="inline-flex items-center gap-2 border border-[hsl(var(--accent-foreground)/.55)] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--accent-foreground))] hover:text-[hsl(var(--accent))]"><Phone className="h-4 w-4" /> Call</a><a href={cv} download="Saad-Faid-CV.pdf" data-testid="link-download-cv" className="inline-flex items-center gap-2 bg-[hsl(var(--accent-foreground))] px-4 py-3 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent))] transition-transform hover:-translate-y-1"><Download className="h-4 w-4" /> CV</a></div></div>
         <div className="reveal reveal-delay-2 mt-20 grid gap-8 border-t border-[hsl(var(--accent-foreground)/.25)] pt-7 sm:grid-cols-3"><div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">Based in</p><p className="mt-2 text-sm">Berrechid, Morocco</p></div></div><a href="https://www.linkedin.com/in/saad-faid/" target="_blank" rel="noreferrer" data-testid="link-linkedin" className="flex items-start gap-3 transition-opacity hover:opacity-65"><Linkedin className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">Connect on</p><p className="mt-2 text-sm">LinkedIn <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a><a href="https://github.com/saad-faid" target="_blank" rel="noreferrer" data-testid="link-github" className="flex items-start gap-3 transition-opacity hover:opacity-65"><Github className="mt-0.5 h-4 w-4" /><div><p className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-[hsl(var(--accent-foreground)/.55)]">See the code</p><p className="mt-2 text-sm">GitHub <ExternalLink className="ml-1 inline h-3 w-3" /></p></div></a></div>
       </div>
@@ -239,11 +243,23 @@ function Contact() {
 }
 
 function Footer() {
-  return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built with curiosity in Berrechid</span><a href="#top" data-testid="link-back-top" className="transition-colors hover:text-[hsl(var(--accent-foreground))]">Back to top <ArrowUpRight className="ml-1 inline h-3 w-3" /></a></div></footer>;
+  return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built by Saad Faid</span><a href="#top" data-testid="link-back-top" className="transition-colors hover:text-[hsl(var(--accent-foreground))]">Back to top <ArrowUpRight className="ml-1 inline h-3 w-3" /></a></div></footer>;
 }
 
 function Home() {
   const [activeSection, setActiveSection] = useState('about');
+  const [monoMode, setMonoMode] = useState(false);
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem('saad-theme');
+    if (storedTheme === 'mono') setMonoMode(true);
+  }, []);
+  const toggleTheme = () => {
+    setMonoMode((current) => {
+      const next = !current;
+      window.localStorage.setItem('saad-theme', next ? 'mono' : 'signal');
+      return next;
+    });
+  };
   useReveal();
   useEffect(() => {
     const sections = navItems.map((item) => document.querySelector(item.href)).filter(Boolean) as Element[];
@@ -254,7 +270,7 @@ function Home() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
-  return <div className="site-shell scanline grain min-h-[100dvh]"><Header activeSection={activeSection} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
+  return <div className={`site-shell scanline grain min-h-[100dvh]${monoMode ? ' mono-mode' : ''}`}><Header activeSection={activeSection} monoMode={monoMode} onToggleTheme={toggleTheme} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
 }
 
 function Router() {

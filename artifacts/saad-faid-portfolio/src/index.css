@@ -72,6 +72,12 @@
   --accent-foreground: 0 0% 5%;
 }
 
+.mono-mode {
+  --accent: 0 0% 94%;
+  --accent-foreground: 0 0% 5%;
+  --ring: 0 0% 94%;
+}
+
 @layer base {
   * { @apply border-border; }
   html { scroll-behavior: smooth; }
@@ -119,6 +125,10 @@
   background-size: 100% 6px;
 }
 
+.mono-mode.scanline::before {
+  background: linear-gradient(transparent 50%, rgba(255, 255, 255, .025) 50%);
+}
+
 .display-title { letter-spacing: -.085em; line-height: .83; }
 .eyebrow { letter-spacing: .18em; font-size: .67rem; text-transform: uppercase; }
 .hairline { height: 1px; background: hsl(var(--foreground) / .2); }
@@ -159,11 +169,11 @@
   pointer-events: none;
 }
 .portrait-window img {
-  width: 430%;
-  max-width: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
   position: absolute;
-  left: -80%;
-  top: -7%;
   filter: grayscale(1) contrast(1.22);
 }
 
@@ -223,6 +233,8 @@
 .project-art__signal--one { left: 11%; bottom: 14%; }
 .project-art__signal--two { right: 17%; bottom: 18%; width: 34px; height: 2px; }
 .project-art__signal--three { left: 16%; top: 13%; width: 48px; height: 2px; }
+
+.mono-mode .project-art { filter: grayscale(1); }
 
 .skill-tile { transition: transform .3s ease, border-color .3s ease, background-color .3s ease; }
 .skill-tile:hover, .skill-tile:focus-within { transform: translateY(-5px); border-color: hsl(var(--accent)); background: hsl(0 0% 13%); }
