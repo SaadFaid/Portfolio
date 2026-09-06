@@ -2,7 +2,7 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check, Contrast, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
 import { type IconType } from 'react-icons';
-import { SiBootstrap, SiCss, SiFigma, SiFlutter, SiGit, SiGithub, SiGitlab, SiHtml5, SiJavascript, SiLaravel, SiMongodb, SiMysql, SiNodedotjs, SiPhp, SiPostgresql, SiReact, SiSupabase, SiTailwindcss, SiTypescript } from 'react-icons/si';
+import { SiAndroidstudio, SiBootstrap, SiCss, SiFigma, SiFirebase, SiFlutter, SiGit, SiGithub, SiGitlab, SiHtml5, SiJavascript, SiLaravel, SiMongodb, SiMysql, SiNodedotjs, SiPhp, SiPostgresql, SiReact, SiSupabase, SiTailwindcss, SiTypescript } from 'react-icons/si';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -21,6 +21,18 @@ const navItems = [
   { label: 'Contact', href: '#contact' },
 ];
 
+type Theme = 'signal' | 'mono' | 'turquoise';
+const themeLabels: Record<Theme, string> = {
+  signal: 'Orange',
+  mono: 'B&W',
+  turquoise: 'Turquoise',
+};
+const nextTheme: Record<Theme, Theme> = {
+  signal: 'mono',
+  mono: 'turquoise',
+  turquoise: 'signal',
+};
+
 const experiences = [
   { date: 'Jan 2023 — Feb 2023', company: 'OCP Group', detail: 'Direction Générale · Sidi Chennane', role: 'Full Stack Developer Intern', copy: 'Responsive pages, security and performance improvements, and documentation for future iterations.' },
   { date: 'Aug 2024 — Sep 2024', company: 'Innovative Tech Startup', detail: 'Casablanca', role: 'Full Stack Developer Intern', copy: 'A mobile apartment rental and sales experience, plus a web platform for claims, reports and requests.' },
@@ -36,13 +48,17 @@ type Project = {
   tags: string[];
   category: Exclude<WorkFilter, 'all'>;
   art: string;
+  image?: string;
+  bg?: string;
 };
 
 const projects: Project[] = [
-  { number: '01', title: 'Bghit Nsog', name: 'Car rental mobile app', description: 'A mobile-first rental flow for discovering cars, making reservations, and keeping rental operations moving.', tags: ['Flutter', 'Supabase', 'REST APIs'], category: 'selected', art: 'project-art--car' },
+  { number: '01', title: 'Bghit Nsog', name: 'Car rental mobile app', description: 'A mobile-first rental flow for discovering cars, making reservations, and keeping rental operations moving.', tags: ['Flutter', 'Supabase', 'REST APIs'], category: 'selected', art: 'project-art--car', image: '/images/bghit-nsog.png', bg: '#ff4d14' },
   { number: '02', title: 'A place to land', name: 'Apartment rental & sales mobile experience', description: 'An internship project shaped around browsing properties and making the next step in a rental or sale clearer.', tags: ['Flutter', 'Supabase', 'Figma'], category: 'internship', art: 'project-art--realty' },
-  { number: '03', title: 'The fleet, in one place', name: 'Rental agency management platform', description: 'Web surfaces for agencies to coordinate vehicles, reservations, announcements, and fleet availability.', tags: ['React.js', 'Node.js', 'MongoDB'], category: 'selected', art: 'project-art--fleet' },
+  { number: '03', title: 'The fleet, in one place', name: 'Rental agency management platform', description: 'Web surfaces for agencies to coordinate vehicles, reservations, announcements, and fleet availability.', tags: ['React.js', 'Node.js', 'MongoDB'], category: 'selected', art: 'project-art--fleet', image: '/images/rental-car.png', bg: '#2e2e2e' },
   { number: '04', title: 'A clearer queue', name: 'Claims, reports & requests platform', description: 'An internship web platform for organizing claims, reports, and requests in one practical workspace.', tags: ['Laravel', 'PostgreSQL', 'Tailwind CSS'], category: 'internship', art: 'project-art--claims' },
+  { number: '05', title: 'Goals Tracker', name: 'Personal goals & habits tracker', description: 'A focused tracker for setting goals, building habits, and keeping progress visible. Add targets, log progress, and stay on track.', tags: ['React', 'TypeScript', 'Tailwind CSS'], category: 'selected', art: 'project-art--goals', image: '/images/goals-tracker.png', bg: '#1b3a1b' },
+  { number: '06', title: 'AI-Finance-Tracker', name: 'AI-assisted personal finance tracker', description: 'A finance tracker that pairs clean record-keeping with AI-powered insights on spending, budgets, and saving goals.', tags: ['React', 'Node.js', 'OpenAI', 'PostgreSQL'], category: 'selected', art: 'project-art--finance', image: '/images/ai-finance-tracker.png', bg: '#1a2e4a' },
 ];
 
 type Skill = { name: string; group: string; icon?: IconType };
@@ -57,7 +73,9 @@ const skills: Skill[] = [
   { name: 'Node.js', group: 'Backend', icon: SiNodedotjs },
   { name: 'Laravel', group: 'Backend', icon: SiLaravel },
   { name: 'PHP', group: 'Backend', icon: SiPhp },
-  { name: 'Flutter', group: 'Mobile', icon: SiFlutter },
+  { name: 'Flutter (iOS / Android)', group: 'Mobile', icon: SiFlutter },
+  { name: 'Android Studio', group: 'Mobile', icon: SiAndroidstudio },
+  { name: 'Firebase', group: 'Mobile', icon: SiFirebase },
   { name: 'PostgreSQL', group: 'Data', icon: SiPostgresql },
   { name: 'MongoDB', group: 'Data', icon: SiMongodb },
   { name: 'MySQL', group: 'Data', icon: SiMysql },
@@ -89,9 +107,10 @@ function useReveal() {
   }, []);
 }
 
-function Header({ activeSection, monoMode, onToggleTheme }: { activeSection: string; monoMode: boolean; onToggleTheme: () => void }) {
+function Header({ activeSection, theme, onToggleTheme }: { activeSection: string; theme: Theme; onToggleTheme: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+  const upcomingTheme = nextTheme[theme];
   return (
     <header className="fixed inset-x-0 top-0 z-40 px-4 pt-4 sm:px-7 lg:px-10">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between border border-[hsl(var(--foreground)/.2)] bg-[hsl(var(--background)/.88)] px-4 py-3 backdrop-blur-md sm:px-5">
@@ -105,9 +124,9 @@ function Header({ activeSection, monoMode, onToggleTheme }: { activeSection: str
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <button type="button" aria-label={monoMode ? 'Switch to signal theme' : 'Switch to black and white theme'} aria-pressed={monoMode} data-testid="button-theme-toggle" onClick={onToggleTheme} className="inline-flex items-center gap-2 border border-foreground/20 px-3 py-2 font-mono-ui text-[9px] uppercase tracking-[.1em] text-foreground/70 transition-colors hover:border-[hsl(var(--accent))] hover:text-foreground">
+          <button type="button" aria-label={`Switch to ${themeLabels[upcomingTheme]} theme`} title={`Switch to ${themeLabels[upcomingTheme]} theme`} aria-pressed={theme !== 'signal'} data-testid="button-theme-toggle" onClick={onToggleTheme} className="inline-flex items-center gap-2 border border-foreground/20 px-3 py-2 font-mono-ui text-[9px] uppercase tracking-[.1em] text-foreground/70 transition-colors hover:border-[hsl(var(--accent))] hover:text-foreground">
             <Contrast className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{monoMode ? 'Signal' : 'B&W'}</span>
+            <span className="hidden sm:inline">{themeLabels[theme]}</span>
           </button>
           <a href="#contact" data-testid="link-header-contact" className="hidden items-center gap-2 bg-[hsl(var(--accent))] px-4 py-2.5 font-mono-ui text-[10px] uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5 sm:inline-flex">Let&apos;s talk <ArrowUpRight className="h-3.5 w-3.5" /></a>
           <button type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} data-testid="button-mobile-menu" onClick={() => setMenuOpen((open) => !open)} className="grid h-9 w-9 place-items-center border border-foreground/20 lg:hidden">
@@ -176,7 +195,11 @@ function Experience() {
   );
 }
 
-function ProjectVisual({ art }: { art: string }) {
+function ProjectVisual({ art, image, bg }: { art: string; image?: string; bg?: string }) {
+  const [imageBroken, setImageBroken] = useState(false);
+  if (image && !imageBroken) {
+    return <div className="project-art project-art--image" style={bg ? { background: bg } : undefined}><img src={image} alt="" onError={() => setImageBroken(true)} /></div>;
+  }
   return <div className={`project-art ${art}`}><span className="project-art__signal project-art__signal--one" /><span className="project-art__signal project-art__signal--two" /><span className="project-art__signal project-art__signal--three" /></div>;
 }
 
@@ -194,7 +217,7 @@ function Work() {
       <div className="reveal flex flex-col gap-7 border-b border-foreground/20 pb-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="eyebrow font-mono-ui text-[hsl(var(--accent))]">03 / Selected work</p><h2 className="mt-5 max-w-3xl font-display text-5xl font-bold uppercase leading-[.86] sm:text-8xl">From problem<br /><span className="text-[hsl(var(--accent))]">to product.</span></h2></div><p className="max-w-xs text-sm leading-6 text-foreground/55">A growing body of work around rentals, real estate, insurance, and the systems behind them.</p></div>
       <div className="reveal reveal-delay-1 mt-8 flex flex-wrap items-center justify-between gap-4"><div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects">{(['all', 'selected', 'internship'] as WorkFilter[]).map((item) => <button key={item} type="button" aria-pressed={filter === item} data-testid={`button-filter-${item}`} onClick={() => setFilter(item)} className="filter-button border border-foreground/25 px-3 py-2 font-mono-ui text-[9px] uppercase tracking-[.12em] text-foreground/65">{item === 'all' ? 'All work' : item === 'selected' ? 'Selected work' : 'Internship work'}</button>)}</div><span className="font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground/45">{filteredProjects.length} entries / {activeProject?.number ?? '—'} spotlight</span></div>
       <div className="reveal reveal-delay-2 mt-8 grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-        {activeProject && <div className="grid-panel relative min-h-[390px] overflow-hidden border border-foreground/20 p-3 sm:min-h-[490px]"><ProjectVisual art={activeProject.art} /><div className="absolute inset-x-7 bottom-7 z-10 flex items-end justify-between gap-4"><div><p className="font-mono-ui text-[10px] uppercase tracking-[.13em] text-[hsl(var(--accent))]">Spotlight / {activeProject.number}</p><h3 className="mt-3 max-w-xl font-display text-4xl font-bold uppercase leading-[.9] text-foreground sm:text-6xl">{activeProject.title}</h3></div><div className="hidden gap-2 sm:flex"><button type="button" aria-label="Previous project" data-testid="button-project-previous" onClick={() => moveProject(-1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowLeft className="h-4 w-4" /></button><button type="button" aria-label="Next project" data-testid="button-project-next" onClick={() => moveProject(1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowRight className="h-4 w-4" /></button></div></div></div>}
+        {activeProject && <div className="grid-panel relative min-h-[650px] overflow-hidden border border-foreground/20 p-3 sm:min-h-[860px]"><ProjectVisual art={activeProject.art} image={activeProject.image} bg={activeProject.bg} /><div className="absolute inset-x-7 bottom-7 z-10 flex items-end justify-between gap-4"><div><p className="font-mono-ui text-[10px] uppercase tracking-[.13em] text-[hsl(var(--accent))]">Spotlight / {activeProject.number}</p><h3 className="mt-3 max-w-xl font-display text-4xl font-bold uppercase leading-[.9] text-foreground sm:text-6xl">{activeProject.title}</h3></div><div className="hidden gap-2 sm:flex"><button type="button" aria-label="Previous project" data-testid="button-project-previous" onClick={() => moveProject(-1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowLeft className="h-4 w-4" /></button><button type="button" aria-label="Next project" data-testid="button-project-next" onClick={() => moveProject(1)} className="grid h-10 w-10 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.75)] transition-colors hover:border-[hsl(var(--accent))]"><ArrowRight className="h-4 w-4" /></button></div></div></div>}
         <div className="grid gap-3">{filteredProjects.map((project, index) => <button type="button" key={project.number} data-testid={`button-project-${project.number}`} onClick={() => selectProject(index)} className={`work-card text-left ${project.number === activeProject?.number ? 'is-active' : ''} border border-foreground/20 bg-[hsl(var(--card))] p-5`}><div className="flex items-start justify-between gap-4"><span className={`font-mono-ui text-[10px] ${project.number === activeProject?.number ? 'text-[hsl(var(--accent))]' : 'text-foreground/40'}`}>{project.number}</span><ArrowUpRight className={`h-4 w-4 transition-colors ${project.number === activeProject?.number ? 'text-[hsl(var(--accent))]' : 'text-foreground/30'}`} /></div><p className="mt-7 font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/45">{project.name}</p><h3 className="mt-2 font-display text-2xl font-bold uppercase leading-none">{project.title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-foreground/52">{project.description}</p><div className="mt-5 flex flex-wrap gap-2">{project.tags.map((tag) => <span key={tag} className="border border-foreground/15 px-2 py-1 font-mono-ui text-[9px] text-foreground/55">{tag}</span>)}</div></button>)}</div>
       </div>
     </section>
@@ -248,15 +271,17 @@ function Footer() {
 
 function Home() {
   const [activeSection, setActiveSection] = useState('about');
-  const [monoMode, setMonoMode] = useState(false);
+  const [theme, setTheme] = useState<Theme>('mono');
   useEffect(() => {
     const storedTheme = window.localStorage.getItem('saad-theme');
-    if (storedTheme === 'mono') setMonoMode(true);
+    if (storedTheme === 'signal' || storedTheme === 'mono' || storedTheme === 'turquoise') {
+      setTheme(storedTheme);
+    }
   }, []);
   const toggleTheme = () => {
-    setMonoMode((current) => {
-      const next = !current;
-      window.localStorage.setItem('saad-theme', next ? 'mono' : 'signal');
+    setTheme((current) => {
+      const next = nextTheme[current];
+      window.localStorage.setItem('saad-theme', next);
       return next;
     });
   };
@@ -270,7 +295,7 @@ function Home() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
-  return <div className={`site-shell scanline grain min-h-[100dvh]${monoMode ? ' mono-mode' : ''}`}><Header activeSection={activeSection} monoMode={monoMode} onToggleTheme={toggleTheme} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
+  return <div className={`site-shell scanline grain min-h-[100dvh] ${theme === 'mono' ? 'mono-mode' : ''} ${theme === 'turquoise' ? 'turquoise-mode' : ''}`}><Header activeSection={activeSection} theme={theme} onToggleTheme={toggleTheme} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
 }
 
 function Router() {
