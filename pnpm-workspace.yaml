@@ -158,5 +158,5 @@ overrides:
   esbuild: "0.27.3"
 
 allowBuilds:
-  '@clerk/shared': set this to true or false
-  esbuild: set this to true or false
+  '@clerk/shared': true
+  esbuild: true
