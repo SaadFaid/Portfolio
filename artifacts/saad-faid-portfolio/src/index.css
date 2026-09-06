@@ -204,7 +204,7 @@
 
 .project-art { min-height: 280px; position: relative; overflow: hidden; background: #212121; border-bottom: 1px solid hsl(var(--foreground) / .12); }
 .project-art::before, .project-art::after { content: ''; position: absolute; }
-.project-art--image { background: #212121; border-bottom: none; min-height: 800px; }
+.project-art--image { background: #212121; border-bottom: none; min-height: 520px; }
 .project-art--image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 .project-art--realty { background: #dedbd3; }
 .project-art--realty::before {
