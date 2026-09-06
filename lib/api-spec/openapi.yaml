@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: portfolio
+    description: Portfolio content operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /portfolio:
+    get:
+      operationId: getPortfolio
+      tags: [portfolio]
+      summary: Get portfolio content
+      description: Returns the public portfolio document.
+      responses:
+        "200":
+          description: Portfolio content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioDocument"
+    put:
+      operationId: updatePortfolio
+      tags: [portfolio]
+      summary: Update portfolio content
+      description: Replaces the portfolio document for the authenticated owner.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioDocument"
+      responses:
+        "200":
+          description: Updated portfolio content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioDocument"
+        "401":
+          description: Authentication required
+        "403":
+          description: Admin access required
 components:
   schemas:
     HealthStatus:
@@ -33,4 +70,138 @@ components:
           type: string
       required:
         - status
+    PortfolioDocument:
+      type: object
+      required:
+        - profileImageUrl
+        - heroTitle
+        - heroAccent
+        - heroDescription
+        - aboutTitle
+        - aboutDescription
+        - contactMessage
+        - email
+        - phone
+        - location
+        - linkedinUrl
+        - githubUrl
+        - experiences
+        - projects
+        - skills
+        - education
+        - languages
+      properties:
+        profileImageUrl:
+          type: string
+        heroTitle:
+          type: string
+        heroAccent:
+          type: string
+        heroDescription:
+          type: string
+        aboutTitle:
+          type: string
+        aboutDescription:
+          type: string
+        contactMessage:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        location:
+          type: string
+        linkedinUrl:
+          type: string
+        githubUrl:
+          type: string
+        experiences:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioExperience"
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioProject"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioSkill"
+        education:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioEducation"
+        languages:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioLanguage"
+    PortfolioExperience:
+      type: object
+      required: [date, company, detail, role, copy]
+      properties:
+        date:
+          type: string
+        company:
+          type: string
+        detail:
+          type: string
+        role:
+          type: string
+        copy:
+          type: string
+    PortfolioProject:
+      type: object
+      required: [number, title, name, description, tags, category, art]
+      properties:
+        number:
+          type: string
+        title:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+          enum: [selected, internship]
+        art:
+          type: string
+        imageUrl:
+          type: [string, "null"]
+    PortfolioSkill:
+      type: object
+      required: [name, group, icon]
+      properties:
+        name:
+          type: string
+        group:
+          type: string
+        icon:
+          type: string
+    PortfolioEducation:
+      type: object
+      required: [year, title, detail]
+      properties:
+        year:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+    PortfolioLanguage:
+      type: object
+      required: [language, level, width]
+      properties:
+        language:
+          type: string
+        level:
+          type: string
+        width:
+          type: number
+          minimum: 0
+          maximum: 100
 
