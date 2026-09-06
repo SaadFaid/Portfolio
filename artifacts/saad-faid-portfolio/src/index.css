@@ -261,8 +261,8 @@
 .mono-mode .project-art { filter: grayscale(1); }
 .turquoise-mode .project-art { filter: hue-rotate(165deg) saturate(.85); }
 
-.skill-tile { transition: transform .3s ease, border-color .3s ease, background-color .3s ease; }
-.skill-tile:hover, .skill-tile:focus-within { transform: translateY(-5px); border-color: hsl(var(--accent)); background: hsl(0 0% 13%); }
+.skill-tile { transition: transform .3s ease, border-color .3s ease, background-color .3s ease, color .3s ease; }
+.skill-tile:hover, .skill-tile:focus-within { transform: translateY(-5px); border-color: hsl(var(--accent)); background: hsl(0 0% 13%); color: hsl(var(--foreground)); }
 .skill-tile svg { transition: transform .3s ease, color .3s ease; }
 .skill-tile:hover svg, .skill-tile:focus-within svg { transform: scale(1.12); color: hsl(var(--accent)); }
 
