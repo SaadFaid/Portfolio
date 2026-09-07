@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check, Contrast, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUp, ArrowUpRight, Check, Contrast, Download, ExternalLink, Github, Linkedin, Mail, MapPin, Menu, Phone, X } from 'lucide-react';
 import { type IconType } from 'react-icons';
 import { SiAndroidstudio, SiBootstrap, SiCss, SiFigma, SiFirebase, SiFlutter, SiGit, SiGithub, SiGitlab, SiHtml5, SiJavascript, SiLaravel, SiMongodb, SiMysql, SiNodedotjs, SiPhp, SiPostgresql, SiReact, SiSupabase, SiTailwindcss, SiTypescript } from 'react-icons/si';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -281,7 +281,10 @@ function Footer() {
 function BackToTop() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400);
+    const onScroll = () => {
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
+      setVisible(window.scrollY > 400 && !atBottom);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
@@ -289,7 +292,7 @@ function BackToTop() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   return (
     <button type="button" aria-label="Back to top" data-testid="button-back-top" onClick={scrollTop} className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.92)] text-foreground backdrop-blur-sm transition-all duration-300 hover:border-[hsl(var(--accent))] ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'}`}>
-      <ArrowUpRight className="h-5 w-5" />
+      <ArrowUp className="h-5 w-5" />
     </button>
   );
 }
