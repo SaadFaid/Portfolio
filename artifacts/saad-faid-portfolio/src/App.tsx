@@ -275,16 +275,13 @@ function Contact() {
 }
 
 function Footer() {
-  return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built by Saad Faid</span><a href="#top" data-testid="link-back-top" className="transition-colors hover:text-[hsl(var(--accent-foreground))]">Back to top <ArrowUpRight className="ml-1 inline h-3 w-3" /></a></div></footer>;
+  return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built by Saad Faid</span><span className="flex flex-wrap items-center gap-3"><span data-testid="badge-available" className="flex items-center gap-2"><i className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent-foreground))]" /> Available for work</span><span className="text-[hsl(var(--accent-foreground)/.4)]">/</span><span data-testid="badge-version">v2.0 — live</span></span></div></footer>;
 }
 
 function BackToTop() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const onScroll = () => {
-      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
-      setVisible(window.scrollY > 400 && !atBottom);
-    };
+    const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
