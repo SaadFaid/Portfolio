@@ -278,6 +278,22 @@ function Footer() {
   return <footer className="bg-[hsl(var(--accent))] px-6 pb-8 text-[hsl(var(--accent-foreground)/.56)] lg:px-10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-[hsl(var(--accent-foreground)/.25)] pt-5 font-mono-ui text-[9px] uppercase tracking-[.12em] sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Saad Faid</span><span>Built by Saad Faid</span><a href="#top" data-testid="link-back-top" className="transition-colors hover:text-[hsl(var(--accent-foreground))]">Back to top <ArrowUpRight className="ml-1 inline h-3 w-3" /></a></div></footer>;
 }
 
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  return (
+    <button type="button" aria-label="Back to top" data-testid="button-back-top" onClick={scrollTop} className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center border border-foreground/30 bg-[hsl(var(--background)/.92)] text-foreground backdrop-blur-sm transition-all duration-300 hover:border-[hsl(var(--accent))] ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'}`}>
+      <ArrowUpRight className="h-5 w-5" />
+    </button>
+  );
+}
+
 function Home() {
   const [activeSection, setActiveSection] = useState('about');
   const [theme, setTheme] = useState<Theme>('mono');
@@ -304,7 +320,7 @@ function Home() {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
-  return <div className={`site-shell scanline grain min-h-[100dvh] ${theme === 'mono' ? 'mono-mode' : ''} ${theme === 'turquoise' ? 'turquoise-mode' : ''}`}><Header activeSection={activeSection} theme={theme} onToggleTheme={toggleTheme} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><Footer /></div>;
+  return <div className={`site-shell scanline grain min-h-[100dvh] ${theme === 'mono' ? 'mono-mode' : ''} ${theme === 'turquoise' ? 'turquoise-mode' : ''}`}><Header activeSection={activeSection} theme={theme} onToggleTheme={toggleTheme} /><main><Hero /><Ticker /><About /><Experience /><Work /><Toolkit /><Foundations /><Contact /></main><BackToTop /><Footer /></div>;
 }
 
 function Router() {
