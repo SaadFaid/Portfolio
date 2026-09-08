@@ -161,8 +161,8 @@ function Hero() {
           <a href="#work" data-testid="link-hero-work" className="group inline-flex items-center gap-3 font-mono-ui text-[10px] uppercase tracking-[.12em] text-foreground hover:text-[hsl(var(--accent))]">Scroll to selected work <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-y-1 group-hover:translate-x-1" /></a>
         </div>
       </div>
-      <div className="reveal reveal-delay-2 relative mx-auto w-full max-w-[460px] lg:ml-auto">
-        <div className="absolute -right-4 -top-7 grid h-24 w-24 place-items-center border border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-center text-[hsl(var(--accent-foreground))] sm:-right-8 sm:-top-10 sm:h-32 sm:w-32"><span className="font-mono-ui text-[9px] uppercase leading-4 tracking-[.1em]">Full stack<br />web + mobile</span></div>
+      <div className="reveal reveal-delay-2 relative mx-auto w-full max-w-[360px] lg:ml-auto">
+        <div className="absolute -right-3 -top-5 grid h-16 w-16 place-items-center border border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-center text-[hsl(var(--accent-foreground))] sm:-right-6 sm:-top-7 sm:h-24 sm:w-24"><span className="font-mono-ui text-[8px] uppercase leading-3.5 tracking-[.1em]">Full stack<br />web + mobile</span></div>
         <div className="border border-foreground/20 bg-[hsl(var(--card))] p-3">
           <div className="portrait-window aspect-[.84]">
             <img src={profile} alt="Portrait of Saad Faid" />
