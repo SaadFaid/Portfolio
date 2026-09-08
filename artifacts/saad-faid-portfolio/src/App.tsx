@@ -166,7 +166,7 @@ function Hero() {
         <div className="border border-foreground/20 bg-[hsl(var(--card))] p-3">
           <div className="portrait-window aspect-[.84]">
             <img src={profile} alt="Portrait of Saad Faid" />
-            <div className="absolute inset-x-5 bottom-5 z-10 flex items-end justify-between text-[hsl(var(--foreground))]"><div><p className="font-mono-ui text-[9px] uppercase tracking-[.18em] text-[hsl(var(--accent))]">Field note / 01</p><p className="mt-2 font-display text-3xl font-bold leading-none">Curious.<br />Hands-on.</p></div><span className="font-mono-ui text-[9px] text-foreground/50">SF—25</span></div>
+            <div className="absolute inset-x-5 bottom-5 z-10 flex items-end justify-between text-[hsl(var(--foreground))]"><div><p className="font-mono-ui text-[9px] uppercase tracking-[.18em] text-[hsl(var(--accent))]">Field note / 101</p><p className="mt-2 font-display text-3xl font-bold leading-none">Curious.<br />Hands-on.</p></div><span className="font-mono-ui text-[9px] text-foreground/50">SF—101</span></div>
           </div>
           <div className="flex items-center justify-between px-1 pt-4 font-mono-ui text-[9px] uppercase tracking-[.13em] text-foreground/50"><span>Developer profile</span><span className="flex items-center gap-2 text-[hsl(var(--accent))]"><i className="h-1.5 w-1.5 bg-[hsl(var(--accent))]" /> Available</span></div>
         </div>
